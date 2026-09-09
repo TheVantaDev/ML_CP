@@ -1,0 +1,64 @@
+{
+  "model_name": "logistic_regression",
+  "version": 1,
+  "timestamp": "2026-09-09T14:23:14.854699",
+  "metrics": {
+    "test": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "roc_auc_macro": 1.0,
+      "per_class": {
+        "ambient": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 20.0
+        },
+        "unknown": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 10.0
+        },
+        "vessel_like": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 20.0
+        }
+      }
+    },
+    "val": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "roc_auc_macro": 1.0,
+      "per_class": {
+        "ambient": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 20.0
+        },
+        "unknown": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 10.0
+        },
+        "vessel_like": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 20.0
+        }
+      }
+    }
+  },
+  "n_features": 65,
+  "classes": [
+    "ambient",
+    "unknown",
+    "vessel_like"
+  ],
+  "model_params": "{'C': 1.0, 'class_weight': 'balanced', 'dual': False, 'fit_intercept': True, 'intercept_scaling': 1, 'l1_ratio': None, 'max_iter': 2000, 'multi_class': 'deprecated', 'n_jobs': None, 'penalty': 'l2', 'random_state': 42, 'solver': 'lbfgs', 'tol': 0.0001, 'verbose': 0, 'warm_start': False}"
+}

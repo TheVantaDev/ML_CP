@@ -1,0 +1,64 @@
+﻿# ─────────────────────────────────────────────────────────────
+#  Sonobuoy Sound Detective — .gitignore
+# ─────────────────────────────────────────────────────────────
+
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.env
+.venv/
+venv/
+env/
+
+# ── Jupyter ───────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── Audio files (too large for GitHub) ───────────────────────
+# Raw and processed audio — download via instructions in README
+data/raw/**/*.wav
+data/raw/**/*.flac
+data/raw/**/*.mp3
+data/raw/**/*.ogg
+data/processed/**/*.wav
+data/processed/**/*.flac
+data/processed/**/*.mp3
+data/processed/**/*.ogg
+
+# ── Large data files ──────────────────────────────────────────
+# Keep features.csv and selected_features.json (small + useful)
+# Exclude the large binary parquet
+data/features/*.parquet
+
+# ── Trained model binaries (too large, regenerate with train.py)
+models/**/*.joblib
+# Keep metadata JSON so repo shows what was trained
+!models/**/model_metadata.json
+!models/**/selected_features.json
+
+# ── OS noise ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ───────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.code-workspace
+
+# ── Pytest / coverage ─────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ── Logs / temp ───────────────────────────────────────────────
+*.log
+*.tmp

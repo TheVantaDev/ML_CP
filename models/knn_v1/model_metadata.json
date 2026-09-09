@@ -1,0 +1,64 @@
+{
+  "model_name": "knn",
+  "version": 1,
+  "timestamp": "2026-09-09T14:23:16.095438",
+  "metrics": {
+    "test": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "roc_auc_macro": 1.0,
+      "per_class": {
+        "ambient": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 20.0
+        },
+        "unknown": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 10.0
+        },
+        "vessel_like": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 20.0
+        }
+      }
+    },
+    "val": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "roc_auc_macro": 1.0,
+      "per_class": {
+        "ambient": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 20.0
+        },
+        "unknown": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 10.0
+        },
+        "vessel_like": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 20.0
+        }
+      }
+    }
+  },
+  "n_features": 65,
+  "classes": [
+    "ambient",
+    "unknown",
+    "vessel_like"
+  ],
+  "model_params": "{'algorithm': 'auto', 'leaf_size': 30, 'metric': 'minkowski', 'metric_params': None, 'n_jobs': -1, 'n_neighbors': 7, 'p': 2, 'weights': 'distance'}"
+}
