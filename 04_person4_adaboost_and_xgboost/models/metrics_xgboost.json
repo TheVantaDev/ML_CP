@@ -1,0 +1,16 @@
+{
+  "algorithm": "XGBoost",
+  "slug": "xgboost",
+  "test_accuracy": 1.0,
+  "macro_precision": 1.0,
+  "macro_recall": 1.0,
+  "macro_f1": 1.0,
+  "roc_auc_macro": 1.0,
+  "latency_ms": 0.7038099993951619,
+  "training_time_s": 0.7121131420135498,
+  "classes": [
+    "ambient",
+    "unknown",
+    "vessel_like"
+  ]
+}

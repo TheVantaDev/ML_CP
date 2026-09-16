@@ -1,0 +1,16 @@
+{
+  "algorithm": "Decision Tree",
+  "slug": "decision_tree",
+  "test_accuracy": 0.96,
+  "macro_precision": 0.9444444444444445,
+  "macro_recall": 0.9666666666666667,
+  "macro_f1": 0.9521531100478469,
+  "roc_auc_macro": 0.975,
+  "latency_ms": 0.6087899999693036,
+  "training_time_s": 0.052196502685546875,
+  "classes": [
+    "ambient",
+    "unknown",
+    "vessel_like"
+  ]
+}

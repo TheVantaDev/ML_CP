@@ -1,4 +1,4 @@
-# Central configuration for the Sonobuoy Sound Detective project
+ï»¿# Central configuration for the Sonobuoy Sound Detective project
 from pathlib import Path
 
 # --- Project Root --------------------------------------------------------------
@@ -15,6 +15,8 @@ RAW_SHIPSEAR    = RAW_DIR / "shipsear"
 RAW_DEEPSHIP    = RAW_DIR / "deepship"
 RAW_NOAA        = RAW_DIR / "noaa"
 RAW_SYNTHETIC   = RAW_DIR / "synthetic"
+RAW_WATKINS     = RAW_DIR / "watkins"
+RAW_MARINE      = RAW_DIR / "marine_life"
 
 PROC_VESSEL     = PROCESSED_DIR / "vessel_like"
 PROC_MARINE     = PROCESSED_DIR / "marine_life"
@@ -43,13 +45,13 @@ CLASS_NAMES = list(CLASSES.keys())
 NUM_CLASSES = len(CLASSES)
 
 # --- Audio Preprocessing Config ------------------------------------------------
-SAMPLE_RATE         = 22_050       # Hz — standardised sample rate
+SAMPLE_RATE         = 22_050       # Hz - standardised sample rate
 SEGMENT_DURATION    = 4.0          # seconds
 OVERLAP_FRACTION    = 0.50         # 50% hop
-BANDPASS_LOW_HZ     = 20           # Hz — lower edge of bandpass
-BANDPASS_HIGH_HZ    = 5_000        # Hz — upper edge
+BANDPASS_LOW_HZ     = 20           # Hz - lower edge of bandpass
+BANDPASS_HIGH_HZ    = 5_000        # Hz - upper edge
 BANDPASS_ORDER      = 5            # Butterworth order
-MIN_SEGMENT_ENERGY  = 1e-6        # below this ? silence
+MIN_SEGMENT_ENERGY  = 1e-6         # below this -> silence
 MIN_DURATION_SEC    = 1.0          # discard clips shorter than this
 MAX_DURATION_SEC    = 300.0        # flag clips longer than this
 
@@ -62,9 +64,9 @@ TOP_K_PEAKS         = 3            # top frequency peaks to capture
 TONAL_PERSIST_FRAMES= 5            # frames a peak must persist to be "tonal"
 
 # --- Quality / SNR Config ------------------------------------------------------
-MIN_SNR_DB          = 3.0          # below ? poor quality flag
-MAX_SILENCE_PCT     = 0.60         # above ? discard segment
-MAX_CLIPPING_PCT    = 0.05         # above ? flag clipping
+MIN_SNR_DB          = 3.0          # below -> poor quality flag
+MAX_SILENCE_PCT     = 0.60         # above -> discard segment
+MAX_CLIPPING_PCT    = 0.05         # above -> flag clipping
 
 # --- Data Split Config ---------------------------------------------------------
 TRAIN_RATIO         = 0.80
@@ -73,5 +75,5 @@ TEST_RATIO          = 0.10
 RANDOM_SEED         = 42
 
 # --- Model Config --------------------------------------------------------------
-LOW_CONFIDENCE_THRESHOLD = 0.60    # below ? "Review Required"
+LOW_CONFIDENCE_THRESHOLD = 0.60    # below -> "Review Required"
 CV_FOLDS            = 5
