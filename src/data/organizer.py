@@ -4,8 +4,10 @@ Scans raw downloaded data, maps labels to broad project classes,
 copies/links files into processed/, and writes master_metadata.csv.
 
 Label mapping logic:
+  ShipsEar: Classes A, B, C, D (or 0, 1, 2, 3) -> vessel_like, Class E (or 4) -> ambient
   DeepShip: Cargo / Passengership / Tanker / Tug -> vessel_like
   NOAA:     ambient ocean recordings             -> ambient
+  Watkins:  whale / dolphin / seal / fish        -> marine_life
   Synthetic: already labelled by generator       -> vessel_like / ambient / unknown
 
 Usage:
@@ -20,41 +22,17 @@ from pathlib import Path
 
 import pandas as pd
 from tqdm import tqdm
+import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from src.utils.config import (
-    RAW_DIR, PROCESSED_DIR, METADATA_DIR, RAW_DEEPSHIP,
-    RAW_NOAA, RAW_SYNTHETIC, PROC_VESSEL, PROC_AMBIENT,
-    PROC_UNKNOWN, PROC_MARINE, MASTER_METADATA, SAMPLE_RATE,
-    TRAIN_RATIO, VAL_RATIO, RANDOM_SEED
+    RAW_DIR, PROCESSED_DIR, METADATA_DIR, RAW_SHIPSEAR,
+    RAW_DEEPSHIP, RAW_NOAA, RAW_SYNTHETIC, RAW_WATKINS, RAW_MARINE,
+    PROC_VESSEL, PROC_AMBIENT, PROC_UNKNOWN, PROC_MARINE,
+    MASTER_METADATA, SAMPLE_RATE, TRAIN_RATIO, VAL_RATIO, RANDOM_SEED
 )
 
-import numpy as np
-
 rng = np.random.default_rng(RANDOM_SEED)
-
-
-# ─── Label map ─────────────────────────────────────────────────────────────────
-
-# Each entry: (source_keyword_in_path_or_label, broad_class, subclass)
-DEEPSHIP_LABEL_MAP = {
-    "cargo":         ("vessel_like", "cargo"),
-    "passengership": ("vessel_like", "passengership"),
-    "tanker":        ("vessel_like", "tanker"),
-    "tug":           ("vessel_like", "tug"),
-}
-
-NOAA_LABEL_MAP = {
-    # Default all NOAA files to ambient; adjust if you have labelled bioacoustic
-    "default": ("ambient", "ocean_ambient"),
-}
-
-SYNTHETIC_LABEL_MAP = {
-    "vessel_like": ("vessel_like", "synthetic_vessel"),
-    "ambient":     ("ambient",     "synthetic_ambient"),
-    "unknown":     ("unknown",     "synthetic_unknown"),
-}
-
 
 BROAD_CLASS_DIRS = {
     "vessel_like": PROC_VESSEL,
@@ -65,8 +43,31 @@ BROAD_CLASS_DIRS = {
 
 AUDIO_EXTENSIONS = {".wav", ".flac", ".mp3", ".ogg"}
 
+DEEPSHIP_LABEL_MAP = {
+    "cargo":         ("vessel_like", "cargo"),
+    "passengership": ("vessel_like", "passengership"),
+    "tanker":        ("vessel_like", "tanker"),
+    "tug":           ("vessel_like", "tug"),
+}
 
-# ─── Helpers ───────────────────────────────────────────────────────────────────
+SHIPSEAR_NUMERIC_MAP = {
+    "0": ("vessel_like", "fishing_trawler"),  # Class A
+    "1": ("vessel_like", "passenger_ferry"),  # Class B
+    "2": ("vessel_like", "ocean_liner"),      # Class C
+    "3": ("vessel_like", "motorboat"),        # Class D
+    "4": ("ambient",     "ocean_ambient"),    # Class E
+}
+
+NOAA_LABEL_MAP = {
+    "default": ("ambient", "ocean_ambient"),
+}
+
+SYNTHETIC_LABEL_MAP = {
+    "vessel_like": ("vessel_like", "synthetic_vessel"),
+    "ambient":     ("ambient",     "synthetic_ambient"),
+    "unknown":     ("unknown",     "synthetic_unknown"),
+}
+
 
 def _sha256(path: Path, chunk=65536) -> str:
     h = hashlib.sha256()
@@ -77,7 +78,6 @@ def _sha256(path: Path, chunk=65536) -> str:
 
 
 def _get_audio_duration(path: Path) -> float:
-    """Get duration in seconds using soundfile (fast, no decode needed)."""
     try:
         import soundfile as sf
         info = sf.info(str(path))
@@ -95,28 +95,69 @@ def _get_audio_sr(path: Path) -> int:
         return -1
 
 
-# ─── Source scanners ───────────────────────────────────────────────────────────
-
 def _scan_deepship() -> list[dict]:
-    """Walk DeepShip directory tree and infer label from parent folder name."""
     records = []
+    if not RAW_DEEPSHIP.exists():
+        return records
     for audio_path in RAW_DEEPSHIP.rglob("*"):
         if audio_path.suffix.lower() not in AUDIO_EXTENSIONS:
             continue
-        # DeepShip folder structure: raw/deepship/Cargo/shipXXX/*.wav
-        # Find the class folder (first subfolder under deepship)
-        parts = audio_path.relative_to(RAW_DEEPSHIP).parts
-        if len(parts) < 2:
-            continue
-        folder_label = parts[0].lower()
-        if folder_label in DEEPSHIP_LABEL_MAP:
-            broad, subclass = DEEPSHIP_LABEL_MAP[folder_label]
-        else:
-            broad, subclass = "unknown", folder_label
+        parts = [p.lower() for p in audio_path.relative_to(RAW_DEEPSHIP).parts]
+        
+        broad = "vessel_like"
+        subclass = "deepship_vessel"
+        for p in parts:
+            if p in DEEPSHIP_LABEL_MAP:
+                broad, subclass = DEEPSHIP_LABEL_MAP[p]
+                break
+                
         records.append({
             "source_dataset": "DeepShip",
             "original_file":  str(audio_path),
-            "raw_label":      parts[0],
+            "raw_label":      subclass,
+            "label":          broad,
+            "subclass":       subclass,
+        })
+    return records
+
+
+def _scan_shipsear() -> list[dict]:
+    records = []
+    if not RAW_SHIPSEAR.exists():
+        return records
+    for audio_path in RAW_SHIPSEAR.rglob("*"):
+        if audio_path.suffix.lower() not in AUDIO_EXTENSIONS:
+            continue
+        parts = [p.lower() for p in audio_path.relative_to(RAW_SHIPSEAR).parts]
+        combined = " ".join(parts)
+        
+        broad = "vessel_like"
+        subclass = "shipsear_vessel"
+        
+        # Check numeric folder classes (0, 1, 2, 3, 4) in path
+        matched_num = False
+        for p in parts:
+            if p in SHIPSEAR_NUMERIC_MAP:
+                broad, subclass = SHIPSEAR_NUMERIC_MAP[p]
+                matched_num = True
+                break
+                
+        if not matched_num:
+            if any(k in combined for k in ["classe", "class_e", "ambient", "background", "natural"]):
+                broad, subclass = "ambient", "natural_background"
+            elif any(k in combined for k in ["classa", "class_a", "fishing", "trawler"]):
+                broad, subclass = "vessel_like", "fishing_vessel"
+            elif any(k in combined for k in ["classb", "class_b", "passenger", "ferry"]):
+                broad, subclass = "vessel_like", "passenger_ferry"
+            elif any(k in combined for k in ["classc", "class_c", "ocean_liner", "cargo", "ro-ro"]):
+                broad, subclass = "vessel_like", "ocean_liner"
+            elif any(k in combined for k in ["classd", "class_d", "motorboat", "pilot", "sailboat"]):
+                broad, subclass = "vessel_like", "motorboat"
+                
+        records.append({
+            "source_dataset": "ShipsEar",
+            "original_file":  str(audio_path),
+            "raw_label":      subclass,
             "label":          broad,
             "subclass":       subclass,
         })
@@ -124,8 +165,9 @@ def _scan_deepship() -> list[dict]:
 
 
 def _scan_noaa() -> list[dict]:
-    """Treat all NOAA audio files as ambient ocean noise."""
     records = []
+    if not RAW_NOAA.exists():
+        return records
     for audio_path in RAW_NOAA.rglob("*"):
         if audio_path.suffix.lower() not in AUDIO_EXTENSIONS:
             continue
@@ -139,9 +181,30 @@ def _scan_noaa() -> list[dict]:
     return records
 
 
-def _scan_synthetic() -> list[dict]:
-    """Infer synthetic label from parent folder name."""
+def _scan_marine_life() -> list[dict]:
     records = []
+    for raw_dir, name in [(RAW_WATKINS, "Watkins"), (RAW_MARINE, "MarineLife")]:
+        if not raw_dir.exists():
+            continue
+        for audio_path in raw_dir.rglob("*"):
+            if audio_path.suffix.lower() not in AUDIO_EXTENSIONS:
+                continue
+            parts = audio_path.relative_to(raw_dir).parts
+            subclass = parts[0] if len(parts) >= 2 else audio_path.stem
+            records.append({
+                "source_dataset": name,
+                "original_file":  str(audio_path),
+                "raw_label":      subclass,
+                "label":          "marine_life",
+                "subclass":       subclass,
+            })
+    return records
+
+
+def _scan_synthetic() -> list[dict]:
+    records = []
+    if not RAW_SYNTHETIC.exists():
+        return records
     for audio_path in RAW_SYNTHETIC.rglob("*.wav"):
         parts = audio_path.relative_to(RAW_SYNTHETIC).parts
         if len(parts) < 2:
@@ -161,35 +224,39 @@ def _scan_synthetic() -> list[dict]:
     return records
 
 
-# ─── Main organizer ────────────────────────────────────────────────────────────
-
-def organize(copy_files: bool = True) -> pd.DataFrame:
-    """
-    Scan all raw sources, build metadata, copy files to processed/<class>/,
-    assign train/val/test splits, and write master_metadata.csv.
-
-    Args:
-        copy_files: if True, copy audio to processed/; if False, only write metadata.
-    Returns:
-        DataFrame of master_metadata.
-    """
+def organize(copy_files: bool = True, max_per_source: int = 400) -> pd.DataFrame:
     METADATA_DIR.mkdir(parents=True, exist_ok=True)
     for d in BROAD_CLASS_DIRS.values():
         d.mkdir(parents=True, exist_ok=True)
 
     print("Scanning raw data sources ...")
+    raw_deepship = _scan_deepship()
+    raw_shipsear = _scan_shipsear()
+    raw_noaa     = _scan_noaa()
+    raw_marine   = _scan_marine_life()
+    raw_synthetic= _scan_synthetic()
+
+    print(f"  ShipsEar files found : {len(raw_shipsear)}")
+    print(f"  DeepShip files found : {len(raw_deepship)}")
+    print(f"  Synthetic files found: {len(raw_synthetic)}")
+    print(f"  NOAA files found     : {len(raw_noaa)}")
+    print(f"  MarineLife files     : {len(raw_marine)}")
+
+    # Balance/sample from large datasets so ShipsEar doesn't drown everything
     records = []
-    records.extend(_scan_deepship())
-    records.extend(_scan_noaa())
-    records.extend(_scan_synthetic())
+    for src_records in [raw_shipsear, raw_deepship, raw_noaa, raw_marine, raw_synthetic]:
+        if len(src_records) > max_per_source:
+            rng.shuffle(src_records)
+            records.extend(src_records[:max_per_source])
+        else:
+            records.extend(src_records)
 
     if not records:
-        print("[WARN] No audio files found in raw/. Run download.py or synthetic.py first.")
+        print("[WARN] No audio files found in raw/.")
         return pd.DataFrame()
 
-    print(f"Found {len(records)} audio files total.")
+    print(f"Indexed {len(records)} balanced audio files total.")
 
-    # Enrich each record
     final_rows = []
     for rec in tqdm(records, desc="Processing file metadata"):
         path = Path(rec["original_file"])
@@ -200,7 +267,6 @@ def organize(copy_files: bool = True) -> pd.DataFrame:
             orig_sr   = _get_audio_sr(path)
             file_hash = _sha256(path)
         except Exception as e:
-            print(f"  [WARN] Skipping {path.name}: {e}")
             continue
 
         clip_id     = str(uuid.uuid4())[:12]
@@ -223,15 +289,14 @@ def organize(copy_files: bool = True) -> pd.DataFrame:
             "sample_rate":           orig_sr,
             "processed_sample_rate": SAMPLE_RATE,
             "file_hash":             file_hash,
-            "split":                 "",   # assigned below
+            "split":                 "",
             "noise_condition":       "unknown",
             "license_or_attribution":"",
         })
 
     df = pd.DataFrame(final_rows)
 
-    # ── Source-aware train/val/test split ───────────────────────────────────────
-    # Group by (source_dataset, label) so entire source groups stay together.
+    # Source-aware train/val/test split
     df["split"] = ""
     for _, grp in df.groupby(["source_dataset", "label"]):
         idx = grp.index.tolist()

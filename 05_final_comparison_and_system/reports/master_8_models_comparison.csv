@@ -1,0 +1,9 @@
+Model,Accuracy,Macro F1,ROC-AUC
+Decision Tree,96.00%,95.22%,0.975
+Logistic Regression,100.00%,100.00%,1.000
+K-Nearest Neighbors,100.00%,100.00%,1.000
+Support Vector Machine,100.00%,100.00%,1.000
+Gaussian Naive Bayes,100.00%,100.00%,1.000
+Random Forest,100.00%,100.00%,1.000
+AdaBoost,100.00%,100.00%,1.000
+XGBoost,100.00%,100.00%,1.000

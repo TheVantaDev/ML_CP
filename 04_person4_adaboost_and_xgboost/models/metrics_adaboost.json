@@ -1,0 +1,16 @@
+{
+  "algorithm": "AdaBoost",
+  "slug": "adaboost",
+  "test_accuracy": 1.0,
+  "macro_precision": 1.0,
+  "macro_recall": 1.0,
+  "macro_f1": 1.0,
+  "roc_auc_macro": 1.0,
+  "latency_ms": 30.7174040004611,
+  "training_time_s": 1.4567549228668213,
+  "classes": [
+    "ambient",
+    "unknown",
+    "vessel_like"
+  ]
+}

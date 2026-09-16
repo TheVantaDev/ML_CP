@@ -1,0 +1,16 @@
+{
+  "algorithm": "Support Vector Machine (RBF)",
+  "slug": "svm_rbf",
+  "test_accuracy": 1.0,
+  "macro_precision": 1.0,
+  "macro_recall": 1.0,
+  "macro_f1": 1.0,
+  "roc_auc_macro": 1.0,
+  "latency_ms": 0.33808400155976415,
+  "training_time_s": 0.03613543510437012,
+  "classes": [
+    "ambient",
+    "unknown",
+    "vessel_like"
+  ]
+}

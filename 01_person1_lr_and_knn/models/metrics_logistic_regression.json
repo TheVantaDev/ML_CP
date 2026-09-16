@@ -1,0 +1,16 @@
+{
+  "algorithm": "Logistic Regression",
+  "slug": "logistic_regression",
+  "test_accuracy": 1.0,
+  "macro_precision": 1.0,
+  "macro_recall": 1.0,
+  "macro_f1": 1.0,
+  "roc_auc_macro": 1.0,
+  "latency_ms": 0.18238799879327416,
+  "training_time_s": 0.04968571662902832,
+  "classes": [
+    "ambient",
+    "unknown",
+    "vessel_like"
+  ]
+}
