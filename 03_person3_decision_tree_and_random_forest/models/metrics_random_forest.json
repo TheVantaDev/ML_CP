@@ -1,16 +1,23 @@
 {
   "algorithm": "Random Forest",
   "slug": "random_forest",
+  "best_hyperparameters": {
+    "n_estimators": 75,
+    "max_depth": 12,
+    "min_samples_split": 4,
+    "class_weight": "balanced"
+  },
   "test_accuracy": 1.0,
   "macro_precision": 1.0,
   "macro_recall": 1.0,
   "macro_f1": 1.0,
   "roc_auc_macro": 1.0,
-  "latency_ms": 82.50024399952963,
-  "training_time_s": 0.6367855072021484,
+  "latency_ms": 8.057707999832928,
+  "training_time_s": 0.36467957496643066,
   "classes": [
     "ambient",
     "unknown",
     "vessel_like"
-  ]
+  ],
+  "feature_count": 65
 }
