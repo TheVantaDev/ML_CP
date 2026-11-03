@@ -2,22 +2,22 @@
   "algorithm": "Decision Tree",
   "slug": "decision_tree",
   "best_hyperparameters": {
-    "max_depth": 4,
+    "max_depth": 12,
     "criterion": "gini",
     "min_samples_split": 4,
     "min_samples_leaf": 2
   },
-  "test_accuracy": 0.96,
-  "macro_precision": 0.9444444444444445,
-  "macro_recall": 0.9666666666666667,
-  "macro_f1": 0.9521531100478469,
-  "roc_auc_macro": 0.975,
-  "latency_ms": 0.20031900028698146,
-  "training_time_s": 0.020764827728271484,
+  "test_accuracy": 0.9813278008298755,
+  "macro_precision": 0.9176850681275459,
+  "macro_recall": 0.929654157468727,
+  "macro_f1": 0.9235143511656112,
+  "roc_auc_macro": 0.9416985113919346,
+  "latency_ms": 0.13353399990592152,
+  "training_time_s": 0.1802220344543457,
   "classes": [
     "ambient",
     "unknown",
     "vessel_like"
   ],
-  "feature_count": 65
+  "feature_count": 66
 }
