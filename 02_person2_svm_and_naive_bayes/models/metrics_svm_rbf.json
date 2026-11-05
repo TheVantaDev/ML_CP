@@ -1,16 +1,29 @@
 {
   "algorithm": "Support Vector Machine (RBF)",
   "slug": "svm_rbf",
-  "test_accuracy": 1.0,
-  "macro_precision": 1.0,
-  "macro_recall": 1.0,
-  "macro_f1": 1.0,
-  "roc_auc_macro": 1.0,
-  "latency_ms": 0.33808400155976415,
-  "training_time_s": 0.03613543510437012,
+  "best_hyperparameters": {
+    "C": 10.0,
+    "gamma": 0.015151515151515152,
+    "class_weight": null,
+    "kernel": "rbf"
+  },
+  "test_accuracy": 0.9813278008298755,
+  "macro_precision": 0.9169103313840156,
+  "macro_recall": 0.8570517537404955,
+  "macro_f1": 0.8852445616078635,
+  "roc_auc_macro": 0.9787280068126285,
+  "latency_ms": 0.11023400002159178,
+  "training_time_s": 0.1701517105102539,
+  "macro_f1_ci_95": [
+    0.7798732425622011,
+    0.9545177318158211
+  ],
+  "macro_f1_top_probability": 0.9015781455892516,
+  "accuracy_top_probability": 0.9854771784232366,
   "classes": [
     "ambient",
     "unknown",
     "vessel_like"
-  ]
+  ],
+  "feature_count": 66
 }
