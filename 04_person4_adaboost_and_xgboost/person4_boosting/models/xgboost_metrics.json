@@ -1,0 +1,44 @@
+{
+  "model": "XGBoost (Extreme Gradient Boosting)",
+  "loss_function": "multi:softprob (Softmax with 2nd-order Taylor expansion)",
+  "best_hyperparameters": {
+    "colsample_bytree": 0.8,
+    "learning_rate": 0.2,
+    "max_depth": 6,
+    "n_estimators": 200,
+    "subsample": 0.8
+  },
+  "cv_best_f1_macro": 0.980099475576855,
+  "test_metrics": {
+    "accuracy": 0.9798657718120806,
+    "precision_macro": 0.9807422969187675,
+    "recall_macro": 0.979616724738676,
+    "f1_macro": 0.9800942902042955,
+    "log_loss": 0.06426781080592824
+  },
+  "holdout_metrics": {
+    "accuracy": 0.9822485207100592,
+    "precision_macro": 0.9836956521739131,
+    "recall_macro": 0.9802631578947368,
+    "f1_macro": 0.9812990611051254,
+    "log_loss": 0.05201531048816662
+  },
+  "generalization_gap": 0.002382748897978626,
+  "training_time_seconds": 2.4472663402557373,
+  "inference_latency_ms": 2.3334886990487576,
+  "model_size_kb": {
+    "native_json": 324.84765625,
+    "joblib": 619.5322265625
+  },
+  "best_iteration": 95,
+  "n_features": 35,
+  "n_train_samples": 545,
+  "n_test_samples": 149,
+  "n_holdout_samples": 169,
+  "class_names": [
+    "vessel_like",
+    "marine_life",
+    "ambient",
+    "unknown"
+  ]
+}

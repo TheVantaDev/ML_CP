@@ -1,0 +1,35 @@
+{
+  "model": "AdaBoost",
+  "base_estimator": "DecisionTreeClassifier(max_depth=1)",
+  "best_hyperparameters": {
+    "learning_rate": 0.1,
+    "n_estimators": 200
+  },
+  "cv_best_f1_macro": 0.8964365100872728,
+  "test_metrics": {
+    "accuracy": 0.8993288590604027,
+    "precision_macro": 0.9090909090909092,
+    "recall_macro": 0.8906649245063879,
+    "f1_macro": 0.8943647830549316
+  },
+  "holdout_metrics": {
+    "accuracy": 0.9053254437869822,
+    "precision_macro": 0.9148484848484848,
+    "recall_macro": 0.9004079967360261,
+    "f1_macro": 0.8998721333113348
+  },
+  "generalization_gap": 0.00599658472657949,
+  "training_time_seconds": 2.1234562397003174,
+  "inference_latency_ms": 75.06626049336046,
+  "model_size_kb": 138.89453125,
+  "n_features": 35,
+  "n_train_samples": 545,
+  "n_test_samples": 149,
+  "n_holdout_samples": 169,
+  "class_names": [
+    "vessel_like",
+    "marine_life",
+    "ambient",
+    "unknown"
+  ]
+}
