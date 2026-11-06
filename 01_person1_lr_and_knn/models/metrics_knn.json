@@ -1,16 +1,25 @@
 {
   "algorithm": "K-Nearest Neighbors",
   "slug": "knn",
-  "test_accuracy": 1.0,
-  "macro_precision": 1.0,
-  "macro_recall": 1.0,
-  "macro_f1": 1.0,
-  "roc_auc_macro": 1.0,
-  "latency_ms": 19.093092000111938,
-  "training_time_s": 0.0030188560485839844,
+  "best_hyperparameters": {
+    "model__n_neighbors": 7,
+    "model__p": 1,
+    "model__weights": "distance"
+  },
+  "grouped_cv_macro_f1": 0.9368423038298305,
+  "accuracy": 0.991701244813278,
+  "balanced_accuracy": 0.8925925925925927,
+  "macro_precision": 0.9970824215900803,
+  "macro_recall": 0.8925925925925927,
+  "macro_f1": 0.939324272219009,
+  "roc_auc_macro": 0.9852207949870153,
+  "log_loss": 0.09254552537561235,
+  "latency_ms": 2.2130759998981375,
   "classes": [
     "ambient",
     "unknown",
     "vessel_like"
-  ]
+  ],
+  "feature_count": 66,
+  "test_segments": 482
 }

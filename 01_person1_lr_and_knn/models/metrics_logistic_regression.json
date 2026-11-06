@@ -1,16 +1,37 @@
 {
-  "algorithm": "Logistic Regression",
+  "algorithm": "Multinomial Logistic Regression",
   "slug": "logistic_regression",
-  "test_accuracy": 1.0,
-  "macro_precision": 1.0,
-  "macro_recall": 1.0,
-  "macro_f1": 1.0,
-  "roc_auc_macro": 1.0,
-  "latency_ms": 0.18238799879327416,
-  "training_time_s": 0.04968571662902832,
+  "best_hyperparameters": {
+    "lr__C": 0.1,
+    "lr__class_weight": null
+  },
+  "grouped_cv_macro_f1": 0.921485275030804,
+  "validation": {
+    "accuracy": 0.9794721407624634,
+    "balanced_accuracy": 0.9596044250754274,
+    "macro_precision": 0.9220988015200233,
+    "macro_recall": 0.9596044250754274,
+    "macro_f1": 0.9393560975609755,
+    "roc_auc_macro": 0.9961878526279699,
+    "log_loss": 0.06301117732135039
+  },
+  "test": {
+    "accuracy": 0.9730290456431535,
+    "balanced_accuracy": 0.8337380426784401,
+    "macro_precision": 0.86099965188076,
+    "macro_recall": 0.8337380426784401,
+    "macro_f1": 0.842111011178209,
+    "roc_auc_macro": 0.9923963261343837,
+    "log_loss": 0.13159537002042537
+  },
+  "training_time_seconds": 0.05086540000047535,
+  "prediction_time_seconds": 0.0047873999865259975,
+  "latency_ms": 0.009932365117273854,
   "classes": [
     "ambient",
     "unknown",
     "vessel_like"
-  ]
+  ],
+  "feature_count": 66,
+  "test_segments": 482
 }
