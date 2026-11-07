@@ -66,3 +66,6 @@ htmlcov/
 # Personal work plan (local only)
 02_person2_svm_and_naive_bayes/PERSON2_WORK_PLAN.md
 02_person2_svm_and_naive_bayes/PERSON2_WORK_LOG.md
+
+# Large ML datasets - keep locally, don't upload
+04_person4_adaboost_and_xgboost/person4_boosting/raw_audio/
