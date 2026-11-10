@@ -1,16 +1,22 @@
 {
   "algorithm": "AdaBoost",
   "slug": "adaboost",
-  "test_accuracy": 1.0,
-  "macro_precision": 1.0,
-  "macro_recall": 1.0,
-  "macro_f1": 1.0,
-  "roc_auc_macro": 1.0,
-  "latency_ms": 30.7174040004611,
-  "training_time_s": 1.4567549228668213,
+  "best_hyperparameters": {
+    "n_estimators": 200,
+    "learning_rate": 0.1,
+    "base_estimator": "DecisionTreeClassifier(max_depth=1)"
+  },
+  "test_accuracy": 0.9688796680497925,
+  "macro_precision": 0.655982905982906,
+  "macro_recall": 0.5666666666666667,
+  "macro_f1": 0.6024142556045219,
+  "roc_auc_macro": 0.9780253026722036,
+  "latency_ms": 0.1619585062265087,
+  "training_time_s": 12.699585099937394,
   "classes": [
     "ambient",
     "unknown",
     "vessel_like"
-  ]
+  ],
+  "feature_count": 66
 }

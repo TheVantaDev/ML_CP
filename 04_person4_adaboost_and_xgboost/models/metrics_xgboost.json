@@ -1,16 +1,24 @@
 {
   "algorithm": "XGBoost",
   "slug": "xgboost",
-  "test_accuracy": 1.0,
-  "macro_precision": 1.0,
-  "macro_recall": 1.0,
-  "macro_f1": 1.0,
-  "roc_auc_macro": 1.0,
-  "latency_ms": 0.7038099993951619,
-  "training_time_s": 0.7121131420135498,
+  "best_hyperparameters": {
+    "n_estimators": 200,
+    "learning_rate": 0.2,
+    "max_depth": 6,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8
+  },
+  "test_accuracy": 0.991701244813278,
+  "macro_precision": 0.9970824215900803,
+  "macro_recall": 0.8925925925925927,
+  "macro_f1": 0.939324272219009,
+  "roc_auc_macro": 0.9968288321508235,
+  "latency_ms": 0.005701452221226766,
+  "training_time_s": 0.6520379999419674,
   "classes": [
     "ambient",
     "unknown",
     "vessel_like"
-  ]
+  ],
+  "feature_count": 66
 }
