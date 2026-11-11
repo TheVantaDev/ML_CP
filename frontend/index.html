@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🔊 Sonobuoy Sound Detective</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0a0f1e;--surface:#111827;--surface2:#1f2937;--border:#374151;
+    --accent:#6366f1;--accent2:#818cf8;--text:#f9fafb;--muted:#9ca3af;
+    --ambient:#3b82f6;--unknown:#f59e0b;--vessel:#ef4444;
+  }
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem}
+
+  /* ── Header ── */
+  header{text-align:center;margin-bottom:2.5rem}
+  header h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#a78bfa,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  header p{color:var(--muted);margin-top:.4rem;font-size:.95rem}
+  .badge{display:inline-block;background:#1a2235;border:1px solid #374151;color:#a78bfa;font-size:.75rem;padding:.2rem .6rem;border-radius:999px;margin-top:.5rem}
+
+  /* ── Card ── */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:1rem;padding:2rem;width:100%;max-width:560px;box-shadow:0 25px 60px rgba(0,0,0,.5)}
+
+  /* ── Drop zone ── */
+  #dropzone{border:2px dashed var(--border);border-radius:.75rem;padding:3rem 1rem;text-align:center;cursor:pointer;transition:all .25s;position:relative}
+  #dropzone:hover,#dropzone.drag{border-color:var(--accent);background:#1a1f35}
+  #dropzone .icon{font-size:3rem;margin-bottom:.75rem}
+  #dropzone p{color:var(--muted);font-size:.9rem}
+  #dropzone strong{color:var(--accent2)}
+  #fileInput{display:none}
+
+  /* ── File info ── */
+  #fileInfo{display:none;margin-top:1rem;background:var(--surface2);border-radius:.5rem;padding:.75rem 1rem;display:none;align-items:center;gap:.75rem}
+  #fileInfo .fi-icon{font-size:1.5rem}
+  #fileInfo .fi-name{font-size:.85rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #fileInfo .fi-size{font-size:.75rem;color:var(--muted)}
+
+  /* ── Waveform ── */
+  #waveWrap{margin-top:1rem;display:none}
+  #waveCanvas{width:100%;height:64px;border-radius:.5rem;background:#0d1424}
+
+  /* ── Button ── */
+  #analyzeBtn{margin-top:1.25rem;width:100%;padding:.85rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:.6rem;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s;letter-spacing:.02em}
+  #analyzeBtn:disabled{opacity:.5;cursor:not-allowed}
+  #analyzeBtn:not(:disabled):hover{opacity:.88}
+
+  /* ── Loader ── */
+  #loader{display:none;margin:1.5rem auto;text-align:center}
+  .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto .75rem}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #loader p{color:var(--muted);font-size:.85rem}
+
+  /* ── Result ── */
+  #result{display:none;margin-top:1.5rem}
+  .result-box{border-radius:.75rem;padding:1.5rem;border:1.5px solid;text-align:center}
+  .result-icon{font-size:3.5rem;margin-bottom:.5rem}
+  .result-label{font-size:1.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+  .result-conf{font-size:.95rem;color:var(--muted);margin-top:.25rem}
+  .result-desc{font-size:.85rem;margin-top:.75rem;line-height:1.5;opacity:.85}
+
+  /* ── Prob bars ── */
+  .prob-bars{margin-top:1.25rem}
+  .prob-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem}
+  .prob-name{width:100px;font-size:.78rem;color:var(--muted);text-align:right;white-space:nowrap}
+  .prob-track{flex:1;background:var(--surface2);border-radius:999px;height:8px;overflow:hidden}
+  .prob-fill{height:100%;border-radius:999px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .prob-pct{width:44px;font-size:.78rem;text-align:right;font-weight:600}
+
+  /* ── Meta ── */
+  .meta{display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap}
+  .meta-chip{background:var(--surface2);border:1px solid var(--border);border-radius:.4rem;padding:.3rem .7rem;font-size:.75rem;color:var(--muted)}
+  .meta-chip b{color:var(--text)}
+
+  /* ── Error ── */
+  #error{display:none;margin-top:1rem;background:#2d1a1a;border:1px solid #7f1d1d;border-radius:.5rem;padding:.75rem 1rem;color:#fca5a5;font-size:.85rem}
+
+  /* ── Footer ── */
+  footer{margin-top:2rem;color:var(--muted);font-size:.75rem;text-align:center}
+  footer b{color:var(--accent2)}
+
+  /* ── Recorded audio row ── */
+  #recRow{display:none;margin-top:.75rem;align-items:center;gap:.5rem}
+  #recBtn{background:none;border:1.5px solid var(--border);border-radius:.4rem;color:var(--muted);padding:.4rem .8rem;cursor:pointer;font-size:.82rem;transition:all .2s}
+  #recBtn:hover{border-color:#ef4444;color:#ef4444}
+  #recBtn.recording{border-color:#ef4444;color:#ef4444;animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.5}}
+  #recTimer{font-size:.82rem;color:var(--muted);min-width:40px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔊 Sonobuoy Sound Detective</h1>
+  <p>Underwater Acoustic Event Classification</p>
+  <span class="badge">🌲 Random Forest · 99.37% Accuracy</span>
+</header>
+
+<div class="card">
+
+  <!-- Drop zone -->
+  <div id="dropzone">
+    <div class="icon">🎧</div>
+    <p><strong>Drop an audio file here</strong></p>
+    <p style="margin-top:.35rem">or <strong>click to browse</strong></p>
+    <p style="margin-top:.5rem;font-size:.75rem;opacity:.6">WAV · MP3 · FLAC · OGG · M4A</p>
+  </div>
+  <input type="file" id="fileInput" accept="audio/*"/>
+
+  <!-- Record row -->
+  <div id="recRow" style="display:flex">
+    <button id="recBtn">🎙️ Record from mic</button>
+    <span id="recTimer"></span>
+  </div>
+
+  <!-- File info -->
+  <div id="fileInfo" style="display:none;margin-top:.75rem;background:var(--surface2);border-radius:.5rem;padding:.75rem 1rem;display:none;align-items:center;gap:.75rem">
+    <span class="fi-icon">🎵</span>
+    <div style="overflow:hidden">
+      <div class="fi-name" id="fileName"></div>
+      <div class="fi-size" id="fileSize"></div>
+    </div>
+  </div>
+
+  <!-- Waveform -->
+  <div id="waveWrap">
+    <canvas id="waveCanvas"></canvas>
+  </div>
+
+  <!-- Analyze -->
+  <button id="analyzeBtn" disabled>Analyze Audio</button>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="spinner"></div>
+    <p>Extracting features & running inference…</p>
+  </div>
+
+  <!-- Error -->
+  <div id="error"></div>
+
+  <!-- Result -->
+  <div id="result">
+    <div class="result-box" id="resultBox">
+      <div class="result-icon" id="resultIcon"></div>
+      <div class="result-label" id="resultLabel"></div>
+      <div class="result-conf" id="resultConf"></div>
+      <div class="result-desc" id="resultDesc"></div>
+    </div>
+    <div class="prob-bars" id="probBars"></div>
+    <div class="meta" id="metaChips"></div>
+  </div>
+
+</div>
+
+<footer>
+  Sonobuoy Sound Detective · <b>Random Forest</b> (Person 3) · 66-feature acoustic vector
+</footer>
+
+<script>
+const API = "http://localhost:5000";
+const dropzone   = document.getElementById("dropzone");
+const fileInput  = document.getElementById("fileInput");
+const fileInfo   = document.getElementById("fileInfo");
+const fileName   = document.getElementById("fileName");
+const fileSize   = document.getElementById("fileSize");
+const waveWrap   = document.getElementById("waveWrap");
+const waveCanvas = document.getElementById("waveCanvas");
+const analyzeBtn = document.getElementById("analyzeBtn");
+const loader     = document.getElementById("loader");
+const result     = document.getElementById("result");
+const resultBox  = document.getElementById("resultBox");
+const resultIcon = document.getElementById("resultIcon");
+const resultLabel= document.getElementById("resultLabel");
+const resultConf = document.getElementById("resultConf");
+const resultDesc = document.getElementById("resultDesc");
+const probBars   = document.getElementById("probBars");
+const metaChips  = document.getElementById("metaChips");
+const errorDiv   = document.getElementById("error");
+const recBtn     = document.getElementById("recBtn");
+const recTimer   = document.getElementById("recTimer");
+const recRow     = document.getElementById("recRow");
+
+let selectedFile = null;
+
+// ── Show microphone button if supported ──
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  recRow.style.display = "flex";
+}
+
+// ── Drag & drop ──
+dropzone.addEventListener("click", () => fileInput.click());
+dropzone.addEventListener("dragover", e => { e.preventDefault(); dropzone.classList.add("drag"); });
+dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag"));
+dropzone.addEventListener("drop", e => { e.preventDefault(); dropzone.classList.remove("drag"); handleFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener("change", e => handleFile(e.target.files[0]));
+
+function humanSize(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + " KB";
+  return (bytes/1048576).toFixed(1) + " MB";
+}
+
+function handleFile(file) {
+  if (!file) return;
+  selectedFile = file;
+  fileName.textContent = file.name;
+  fileSize.textContent = humanSize(file.size);
+  fileInfo.style.display = "flex";
+  analyzeBtn.disabled = false;
+  result.style.display = "none";
+  errorDiv.style.display = "none";
+  drawWaveform(file);
+}
+
+// ── Waveform preview ──
+function drawWaveform(file) {
+  const ctx = new AudioContext();
+  file.arrayBuffer().then(buf => ctx.decodeAudioData(buf)).then(decoded => {
+    const data = decoded.getChannelData(0);
+    const c = waveCanvas; const g = c.getContext("2d");
+    c.width = c.offsetWidth * devicePixelRatio;
+    c.height = 64 * devicePixelRatio;
+    g.scale(devicePixelRatio, devicePixelRatio);
+    const W = c.offsetWidth, H = 64;
+    const step = Math.ceil(data.length / W);
+    g.clearRect(0,0,W,H);
+    const grad = g.createLinearGradient(0,0,W,0);
+    grad.addColorStop(0,"#6366f1"); grad.addColorStop(1,"#38bdf8");
+    g.fillStyle = grad;
+    for (let x = 0; x < W; x++) {
+      let max = 0;
+      for (let j = x*step; j < (x+1)*step && j < data.length; j++) max = Math.max(max, Math.abs(data[j]));
+      const h = max * H;
+      g.fillRect(x, (H - h)/2, 1, h || 1);
+    }
+    waveWrap.style.display = "block";
+    ctx.close();
+  }).catch(() => waveWrap.style.display = "none");
+}
+
+// ── Analyze ──
+analyzeBtn.addEventListener("click", async () => {
+  if (!selectedFile) return;
+  loader.style.display = "block";
+  result.style.display = "none";
+  errorDiv.style.display = "none";
+  analyzeBtn.disabled = true;
+
+  const form = new FormData();
+  form.append("audio", selectedFile);
+
+  try {
+    const res = await fetch(`${API}/predict`, { method: "POST", body: form });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Server error");
+    showResult(data);
+  } catch(e) {
+    errorDiv.textContent = "⚠️ " + e.message + "\n\nMake sure the Flask server is running: python frontend/app.py";
+    errorDiv.style.display = "block";
+  } finally {
+    loader.style.display = "none";
+    analyzeBtn.disabled = false;
+  }
+});
+
+const COLOR_MAP = { ambient:"#3b82f6", unknown:"#f59e0b", vessel_like:"#ef4444" };
+
+function showResult(data) {
+  const color = data.color || COLOR_MAP[data.label] || "#6b7280";
+
+  resultBox.style.borderColor = color;
+  resultBox.style.background  = color + "18";
+  resultIcon.textContent  = data.icon  || "❓";
+  resultLabel.textContent = data.label.replace("_"," ");
+  resultLabel.style.color = color;
+  resultConf.textContent  = `Confidence: ${data.confidence}%`;
+  resultDesc.textContent  = data.description || "";
+
+  // Prob bars
+  probBars.innerHTML = "";
+  const sorted = Object.entries(data.all_probs).sort((a,b)=>b[1]-a[1]);
+  sorted.forEach(([cls, pct]) => {
+    const col = COLOR_MAP[cls] || "#6b7280";
+    const pretty = cls.replace("_"," ");
+    probBars.innerHTML += `
+      <div class="prob-row">
+        <div class="prob-name">${pretty}</div>
+        <div class="prob-track"><div class="prob-fill" style="width:${pct}%;background:${col}"></div></div>
+        <div class="prob-pct" style="color:${col}">${pct}%</div>
+      </div>`;
+  });
+
+  // Meta
+  metaChips.innerHTML = `
+    <div class="meta-chip">⏱️ Duration: <b>${data.duration_s}s</b></div>
+    <div class="meta-chip">🎚️ Sample Rate: <b>${data.sample_rate} Hz</b></div>
+    <div class="meta-chip">🌲 Model: <b>Random Forest</b></div>`;
+
+  result.style.display = "block";
+  result.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+// ── Mic recording ──
+let mediaRecorder, chunks = [], recInterval;
+
+recBtn.addEventListener("click", async () => {
+  if (mediaRecorder && mediaRecorder.state === "recording") {
+    mediaRecorder.stop();
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    chunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => chunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      clearInterval(recInterval);
+      recTimer.textContent = "";
+      recBtn.textContent = "🎙️ Record from mic";
+      recBtn.classList.remove("recording");
+      stream.getTracks().forEach(t=>t.stop());
+      const blob = new Blob(chunks, {type:"audio/webm"});
+      const file = new File([blob], "recording.webm", {type:"audio/webm"});
+      handleFile(file);
+    };
+    mediaRecorder.start();
+    recBtn.textContent = "⏹️ Stop recording";
+    recBtn.classList.add("recording");
+    let secs = 0;
+    recInterval = setInterval(() => { secs++; recTimer.textContent = secs + "s"; }, 1000);
+  } catch(e) {
+    alert("Microphone access denied: " + e.message);
+  }
+});
+</script>
+</body>
+</html>
