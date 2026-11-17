@@ -9,330 +9,393 @@
   :root{
     --bg:#0a0f1e;--surface:#111827;--surface2:#1f2937;--border:#374151;
     --accent:#6366f1;--accent2:#818cf8;--text:#f9fafb;--muted:#9ca3af;
-    --ambient:#3b82f6;--unknown:#f59e0b;--vessel:#ef4444;
+    --ambient:#3b82f6;--unknown:#f59e0b;--vessel:#ef4444;--anomaly:#a855f7;
+    --green:#22c55e;
   }
   body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem}
 
   /* ── Header ── */
-  header{text-align:center;margin-bottom:2.5rem}
+  header{text-align:center;margin-bottom:2rem}
   header h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#a78bfa,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  header p{color:var(--muted);margin-top:.4rem;font-size:.95rem}
-  .badge{display:inline-block;background:#1a2235;border:1px solid #374151;color:#a78bfa;font-size:.75rem;padding:.2rem .6rem;border-radius:999px;margin-top:.5rem}
+  header p{color:var(--muted);margin-top:.4rem;font-size:.9rem}
+  .badges{display:flex;gap:.5rem;justify-content:center;margin-top:.6rem;flex-wrap:wrap}
+  .badge{display:inline-block;background:#1a2235;border:1px solid #374151;color:#a78bfa;font-size:.72rem;padding:.2rem .6rem;border-radius:999px}
+  .badge.green{color:#22c55e;border-color:#22c55e44}
 
-  /* ── Card ── */
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:1rem;padding:2rem;width:100%;max-width:560px;box-shadow:0 25px 60px rgba(0,0,0,.5)}
+  /* ── Upload card ── */
+  .upload-card{background:var(--surface);border:1px solid var(--border);border-radius:1rem;padding:1.75rem;width:100%;max-width:620px;box-shadow:0 25px 60px rgba(0,0,0,.5);margin-bottom:1.5rem}
 
   /* ── Drop zone ── */
-  #dropzone{border:2px dashed var(--border);border-radius:.75rem;padding:3rem 1rem;text-align:center;cursor:pointer;transition:all .25s;position:relative}
+  #dropzone{border:2px dashed var(--border);border-radius:.75rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:all .25s;position:relative}
   #dropzone:hover,#dropzone.drag{border-color:var(--accent);background:#1a1f35}
-  #dropzone .icon{font-size:3rem;margin-bottom:.75rem}
-  #dropzone p{color:var(--muted);font-size:.9rem}
+  #dropzone .icon{font-size:2.5rem;margin-bottom:.6rem}
+  #dropzone p{color:var(--muted);font-size:.88rem}
   #dropzone strong{color:var(--accent2)}
   #fileInput{display:none}
 
   /* ── File info ── */
-  #fileInfo{display:none;margin-top:1rem;background:var(--surface2);border-radius:.5rem;padding:.75rem 1rem;display:none;align-items:center;gap:.75rem}
+  #fileInfo{display:none;margin-top:1rem;background:var(--surface2);border-radius:.5rem;padding:.75rem 1rem;align-items:center;gap:.75rem}
   #fileInfo .fi-icon{font-size:1.5rem}
   #fileInfo .fi-name{font-size:.85rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #fileInfo .fi-size{font-size:.75rem;color:var(--muted)}
 
   /* ── Waveform ── */
   #waveWrap{margin-top:1rem;display:none}
-  #waveCanvas{width:100%;height:64px;border-radius:.5rem;background:#0d1424}
+  #waveCanvas{width:100%;height:56px;border-radius:.5rem;background:#0d1424}
 
-  /* ── Button ── */
+  /* ── Analyze button ── */
   #analyzeBtn{margin-top:1.25rem;width:100%;padding:.85rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:.6rem;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s;letter-spacing:.02em}
   #analyzeBtn:disabled{opacity:.5;cursor:not-allowed}
   #analyzeBtn:not(:disabled):hover{opacity:.88}
 
   /* ── Loader ── */
   #loader{display:none;margin:1.5rem auto;text-align:center}
-  .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto .75rem}
+  .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto .5rem}
   @keyframes spin{to{transform:rotate(360deg)}}
-  #loader p{color:var(--muted);font-size:.85rem}
 
-  /* ── Result ── */
-  #result{display:none;margin-top:1.5rem}
-  .result-box{border-radius:.75rem;padding:1.5rem;border:1.5px solid;text-align:center}
-  .result-icon{font-size:3.5rem;margin-bottom:.5rem}
-  .result-label{font-size:1.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
-  .result-conf{font-size:.95rem;color:var(--muted);margin-top:.25rem}
-  .result-desc{font-size:.85rem;margin-top:.75rem;line-height:1.5;opacity:.85}
+  /* ── Dual result section ── */
+  #results{display:none;width:100%;max-width:620px}
 
-  /* ── Prob bars ── */
-  .prob-bars{margin-top:1.25rem}
-  .prob-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem}
-  .prob-name{width:100px;font-size:.78rem;color:var(--muted);text-align:right;white-space:nowrap}
-  .prob-track{flex:1;background:var(--surface2);border-radius:999px;height:8px;overflow:hidden}
-  .prob-fill{height:100%;border-radius:999px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-  .prob-pct{width:44px;font-size:.78rem;text-align:right;font-weight:600}
+  /* Agreement banner */
+  #agreeBanner{padding:.7rem 1rem;border-radius:.6rem;text-align:center;font-weight:700;font-size:.9rem;margin-bottom:1rem}
+  #agreeBanner.agree{background:#22c55e22;border:1px solid #22c55e55;color:#22c55e}
+  #agreeBanner.disagree{background:#f59e0b22;border:1px solid #f59e0b55;color:#f59e0b}
 
-  /* ── Meta ── */
-  .meta{display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap}
-  .meta-chip{background:var(--surface2);border:1px solid var(--border);border-radius:.4rem;padding:.3rem .7rem;font-size:.75rem;color:var(--muted)}
-  .meta-chip b{color:var(--text)}
+  /* Branch cards side by side */
+  .branches{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+  @media(max-width:520px){.branches{grid-template-columns:1fr}}
 
-  /* ── Error ── */
-  #error{display:none;margin-top:1rem;background:#2d1a1a;border:1px solid #7f1d1d;border-radius:.5rem;padding:.75rem 1rem;color:#fca5a5;font-size:.85rem}
+  .branch-card{background:var(--surface);border:1px solid var(--border);border-radius:1rem;padding:1.25rem;position:relative;overflow:hidden}
+  .branch-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
+  .branch-card.a::before{background:linear-gradient(90deg,#6366f1,#8b5cf6)}
+  .branch-card.b::before{background:linear-gradient(90deg,#a855f7,#ec4899)}
 
-  /* ── Footer ── */
-  footer{margin-top:2rem;color:var(--muted);font-size:.75rem;text-align:center}
-  footer b{color:var(--accent2)}
+  .branch-tag{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+  .branch-model{font-size:.78rem;color:var(--accent2);margin-bottom:.8rem}
 
-  /* ── Recorded audio row ── */
-  #recRow{display:none;margin-top:.75rem;align-items:center;gap:.5rem}
-  #recBtn{background:none;border:1.5px solid var(--border);border-radius:.4rem;color:var(--muted);padding:.4rem .8rem;cursor:pointer;font-size:.82rem;transition:all .2s}
-  #recBtn:hover{border-color:#ef4444;color:#ef4444}
-  #recBtn.recording{border-color:#ef4444;color:#ef4444;animation:pulse 1s infinite}
-  @keyframes pulse{50%{opacity:.5}}
-  #recTimer{font-size:.82rem;color:var(--muted);min-width:40px}
+  .pred-icon{font-size:2.2rem;display:block;margin-bottom:.3rem}
+  .pred-label{font-size:1.1rem;font-weight:800;text-transform:capitalize;margin-bottom:.2rem}
+  .pred-label span{color:inherit}
+  .pred-desc{font-size:.75rem;color:var(--muted);line-height:1.4;margin-bottom:.8rem}
+
+  /* Confidence bar (Branch A) */
+  .conf-wrap{margin-top:.6rem}
+  .conf-label{font-size:.72rem;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:.25rem}
+  .conf-bar{height:6px;border-radius:999px;background:var(--surface2);overflow:hidden}
+  .conf-fill{height:100%;border-radius:999px;transition:width .6s ease}
+
+  /* Prob bars (Branch A — all classes) */
+  .all-probs{margin-top:.75rem}
+  .prob-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem}
+  .prob-name{font-size:.72rem;color:var(--muted);width:72px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prob-bar-wrap{flex:1;height:5px;background:var(--surface2);border-radius:999px;overflow:hidden}
+  .prob-bar-fill{height:100%;border-radius:999px}
+  .prob-val{font-size:.7rem;color:var(--muted);width:36px;text-align:right}
+
+  /* GMM likelihood (Branch B) */
+  .gmm-scores{margin-top:.6rem}
+  .gmm-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem}
+  .gmm-name{font-size:.72rem;color:var(--muted);width:72px}
+  .gmm-bar-wrap{flex:1;height:5px;background:var(--surface2);border-radius:999px;overflow:hidden}
+  .gmm-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#a855f7,#ec4899)}
+  .gmm-val{font-size:.7rem;color:var(--muted);width:36px;text-align:right}
+
+  /* Anomaly badge */
+  .anomaly-badge{display:inline-flex;align-items:center;gap:.35rem;background:#a855f722;border:1px solid #a855f755;color:#a855f7;font-size:.72rem;padding:.2rem .55rem;border-radius:999px;margin-top:.5rem}
+
+  /* Score row */
+  .score-row{margin-top:.5rem;font-size:.72rem;color:var(--muted);display:flex;justify-content:space-between}
+  .score-row span{color:var(--text);font-weight:600}
+
+  /* Audio meta */
+  #audioMeta{background:var(--surface);border:1px solid var(--border);border-radius:.75rem;padding:.75rem 1rem;font-size:.78rem;color:var(--muted);display:flex;gap:1.5rem;flex-wrap:wrap}
+  #audioMeta strong{color:var(--text)}
 </style>
 </head>
 <body>
 
 <header>
   <h1>🔊 Sonobuoy Sound Detective</h1>
-  <p>Underwater Acoustic Event Classification</p>
-  <span class="badge">🌲 Random Forest · 99.37% Accuracy</span>
+  <p>Offline Underwater Acoustic Event Classification</p>
+  <div class="badges">
+    <span class="badge">🤖 Branch A: Random Forest</span>
+    <span class="badge">📊 Branch B: GMM Generative</span>
+    <span class="badge green">✦ Dual-Engine System</span>
+  </div>
 </header>
 
-<div class="card">
-
-  <!-- Drop zone -->
-  <div id="dropzone">
-    <div class="icon">🎧</div>
-    <p><strong>Drop an audio file here</strong></p>
-    <p style="margin-top:.35rem">or <strong>click to browse</strong></p>
-    <p style="margin-top:.5rem;font-size:.75rem;opacity:.6">WAV · MP3 · FLAC · OGG · M4A</p>
+<!-- Upload card -->
+<div class="upload-card">
+  <div id="dropzone" onclick="document.getElementById('fileInput').click()">
+    <div class="icon">🎙️</div>
+    <p>Drag &amp; drop an audio file here, or <strong>click to browse</strong></p>
+    <p style="margin-top:.4rem;font-size:.8rem">Supports WAV, FLAC, MP3, OGG</p>
   </div>
-  <input type="file" id="fileInput" accept="audio/*"/>
+  <input type="file" id="fileInput" accept="audio/*" />
 
-  <!-- Record row -->
-  <div id="recRow" style="display:flex">
-    <button id="recBtn">🎙️ Record from mic</button>
-    <span id="recTimer"></span>
-  </div>
-
-  <!-- File info -->
-  <div id="fileInfo" style="display:none;margin-top:.75rem;background:var(--surface2);border-radius:.5rem;padding:.75rem 1rem;display:none;align-items:center;gap:.75rem">
-    <span class="fi-icon">🎵</span>
-    <div style="overflow:hidden">
-      <div class="fi-name" id="fileName"></div>
-      <div class="fi-size" id="fileSize"></div>
+  <div id="fileInfo">
+    <span class="fi-icon">🔊</span>
+    <div>
+      <div class="fi-name" id="fileName">—</div>
+      <div class="fi-size" id="fileSize">—</div>
     </div>
   </div>
 
-  <!-- Waveform -->
   <div id="waveWrap">
     <canvas id="waveCanvas"></canvas>
   </div>
 
-  <!-- Analyze -->
-  <button id="analyzeBtn" disabled>Analyze Audio</button>
-
-  <!-- Loader -->
-  <div id="loader">
-    <div class="spinner"></div>
-    <p>Extracting features & running inference…</p>
-  </div>
-
-  <!-- Error -->
-  <div id="error"></div>
-
-  <!-- Result -->
-  <div id="result">
-    <div class="result-box" id="resultBox">
-      <div class="result-icon" id="resultIcon"></div>
-      <div class="result-label" id="resultLabel"></div>
-      <div class="result-conf" id="resultConf"></div>
-      <div class="result-desc" id="resultDesc"></div>
-    </div>
-    <div class="prob-bars" id="probBars"></div>
-    <div class="meta" id="metaChips"></div>
-  </div>
-
+  <button id="analyzeBtn" disabled onclick="analyze()">Analyze Audio</button>
 </div>
 
-<footer>
-  Sonobuoy Sound Detective · <b>Random Forest</b> (Person 3) · 66-feature acoustic vector
-</footer>
+<!-- Loader -->
+<div id="loader">
+  <div class="spinner"></div>
+  <p style="color:var(--muted);font-size:.85rem">Running Branch A &amp; Branch B …</p>
+</div>
+
+<!-- Dual Results -->
+<div id="results">
+
+  <!-- Agreement banner -->
+  <div id="agreeBanner"></div>
+
+  <!-- Branch cards -->
+  <div class="branches">
+
+    <!-- Branch A: Random Forest -->
+    <div class="branch-card a">
+      <div class="branch-tag">Branch A</div>
+      <div class="branch-model" id="aModel">Random Forest · 99.37% trained acc</div>
+      <span class="pred-icon" id="aIcon">—</span>
+      <div class="pred-label" id="aLabel" style="color:#6366f1">—</div>
+      <div class="pred-desc" id="aDesc">—</div>
+
+      <!-- Main confidence bar -->
+      <div class="conf-wrap">
+        <div class="conf-label">
+          <span>Confidence</span>
+          <span id="aConf">—</span>
+        </div>
+        <div class="conf-bar">
+          <div class="conf-fill" id="aConfFill" style="background:#6366f1;width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Per-class probability bars -->
+      <div class="all-probs" id="aAllProbs"></div>
+    </div>
+
+    <!-- Branch B: GMM -->
+    <div class="branch-card b">
+      <div class="branch-tag">Branch B</div>
+      <div class="branch-model">GMM · Generative Probabilistic</div>
+      <span class="pred-icon" id="bIcon">—</span>
+      <div class="pred-label" id="bLabel" style="color:#a855f7">—</div>
+      <div class="pred-desc" id="bDesc">—</div>
+
+      <!-- Anomaly badge (shown conditionally) -->
+      <div id="bAnomalyBadge" style="display:none">
+        <span class="anomaly-badge">⚠️ Anomaly Detected — not in training distribution</span>
+      </div>
+
+      <!-- Log-likelihood scores normalised -->
+      <div class="gmm-scores" id="bScores"></div>
+
+      <!-- Raw score info -->
+      <div class="score-row">
+        <span>Log-likelihood:</span>
+        <span id="bRawScore">—</span>
+      </div>
+      <div class="score-row">
+        <span>Threshold:</span>
+        <span id="bThreshold">—</span>
+      </div>
+    </div>
+
+  </div><!-- .branches -->
+
+  <!-- Audio metadata -->
+  <div id="audioMeta">
+    <div>Duration: <strong id="metaDur">—</strong></div>
+    <div>Sample rate: <strong id="metaSr">—</strong></div>
+  </div>
+
+</div><!-- #results -->
 
 <script>
-const API = "http://localhost:5000";
-const dropzone   = document.getElementById("dropzone");
-const fileInput  = document.getElementById("fileInput");
-const fileInfo   = document.getElementById("fileInfo");
-const fileName   = document.getElementById("fileName");
-const fileSize   = document.getElementById("fileSize");
-const waveWrap   = document.getElementById("waveWrap");
-const waveCanvas = document.getElementById("waveCanvas");
-const analyzeBtn = document.getElementById("analyzeBtn");
-const loader     = document.getElementById("loader");
-const result     = document.getElementById("result");
-const resultBox  = document.getElementById("resultBox");
-const resultIcon = document.getElementById("resultIcon");
-const resultLabel= document.getElementById("resultLabel");
-const resultConf = document.getElementById("resultConf");
-const resultDesc = document.getElementById("resultDesc");
-const probBars   = document.getElementById("probBars");
-const metaChips  = document.getElementById("metaChips");
-const errorDiv   = document.getElementById("error");
-const recBtn     = document.getElementById("recBtn");
-const recTimer   = document.getElementById("recTimer");
-const recRow     = document.getElementById("recRow");
+  /* ── File handling ── */
+  const dropzone   = document.getElementById('dropzone');
+  const fileInput  = document.getElementById('fileInput');
+  const fileInfo   = document.getElementById('fileInfo');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  let selectedFile = null;
 
-let selectedFile = null;
-
-// ── Show microphone button if supported ──
-if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-  recRow.style.display = "flex";
-}
-
-// ── Drag & drop ──
-dropzone.addEventListener("click", () => fileInput.click());
-dropzone.addEventListener("dragover", e => { e.preventDefault(); dropzone.classList.add("drag"); });
-dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag"));
-dropzone.addEventListener("drop", e => { e.preventDefault(); dropzone.classList.remove("drag"); handleFile(e.dataTransfer.files[0]); });
-fileInput.addEventListener("change", e => handleFile(e.target.files[0]));
-
-function humanSize(bytes) {
-  if (bytes < 1024) return bytes + " B";
-  if (bytes < 1048576) return (bytes/1024).toFixed(1) + " KB";
-  return (bytes/1048576).toFixed(1) + " MB";
-}
-
-function handleFile(file) {
-  if (!file) return;
-  selectedFile = file;
-  fileName.textContent = file.name;
-  fileSize.textContent = humanSize(file.size);
-  fileInfo.style.display = "flex";
-  analyzeBtn.disabled = false;
-  result.style.display = "none";
-  errorDiv.style.display = "none";
-  drawWaveform(file);
-}
-
-// ── Waveform preview ──
-function drawWaveform(file) {
-  const ctx = new AudioContext();
-  file.arrayBuffer().then(buf => ctx.decodeAudioData(buf)).then(decoded => {
-    const data = decoded.getChannelData(0);
-    const c = waveCanvas; const g = c.getContext("2d");
-    c.width = c.offsetWidth * devicePixelRatio;
-    c.height = 64 * devicePixelRatio;
-    g.scale(devicePixelRatio, devicePixelRatio);
-    const W = c.offsetWidth, H = 64;
-    const step = Math.ceil(data.length / W);
-    g.clearRect(0,0,W,H);
-    const grad = g.createLinearGradient(0,0,W,0);
-    grad.addColorStop(0,"#6366f1"); grad.addColorStop(1,"#38bdf8");
-    g.fillStyle = grad;
-    for (let x = 0; x < W; x++) {
-      let max = 0;
-      for (let j = x*step; j < (x+1)*step && j < data.length; j++) max = Math.max(max, Math.abs(data[j]));
-      const h = max * H;
-      g.fillRect(x, (H - h)/2, 1, h || 1);
-    }
-    waveWrap.style.display = "block";
-    ctx.close();
-  }).catch(() => waveWrap.style.display = "none");
-}
-
-// ── Analyze ──
-analyzeBtn.addEventListener("click", async () => {
-  if (!selectedFile) return;
-  loader.style.display = "block";
-  result.style.display = "none";
-  errorDiv.style.display = "none";
-  analyzeBtn.disabled = true;
-
-  const form = new FormData();
-  form.append("audio", selectedFile);
-
-  try {
-    const res = await fetch(`${API}/predict`, { method: "POST", body: form });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Server error");
-    showResult(data);
-  } catch(e) {
-    errorDiv.textContent = "⚠️ " + e.message + "\n\nMake sure the Flask server is running: python frontend/app.py";
-    errorDiv.style.display = "block";
-  } finally {
-    loader.style.display = "none";
-    analyzeBtn.disabled = false;
-  }
-});
-
-const COLOR_MAP = { ambient:"#3b82f6", unknown:"#f59e0b", vessel_like:"#ef4444" };
-
-function showResult(data) {
-  const color = data.color || COLOR_MAP[data.label] || "#6b7280";
-
-  resultBox.style.borderColor = color;
-  resultBox.style.background  = color + "18";
-  resultIcon.textContent  = data.icon  || "❓";
-  resultLabel.textContent = data.label.replace("_"," ");
-  resultLabel.style.color = color;
-  resultConf.textContent  = `Confidence: ${data.confidence}%`;
-  resultDesc.textContent  = data.description || "";
-
-  // Prob bars
-  probBars.innerHTML = "";
-  const sorted = Object.entries(data.all_probs).sort((a,b)=>b[1]-a[1]);
-  sorted.forEach(([cls, pct]) => {
-    const col = COLOR_MAP[cls] || "#6b7280";
-    const pretty = cls.replace("_"," ");
-    probBars.innerHTML += `
-      <div class="prob-row">
-        <div class="prob-name">${pretty}</div>
-        <div class="prob-track"><div class="prob-fill" style="width:${pct}%;background:${col}"></div></div>
-        <div class="prob-pct" style="color:${col}">${pct}%</div>
-      </div>`;
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault(); dropzone.classList.remove('drag');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
   });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
 
-  // Meta
-  metaChips.innerHTML = `
-    <div class="meta-chip">⏱️ Duration: <b>${data.duration_s}s</b></div>
-    <div class="meta-chip">🎚️ Sample Rate: <b>${data.sample_rate} Hz</b></div>
-    <div class="meta-chip">🌲 Model: <b>Random Forest</b></div>`;
-
-  result.style.display = "block";
-  result.scrollIntoView({behavior:"smooth",block:"nearest"});
-}
-
-// ── Mic recording ──
-let mediaRecorder, chunks = [], recInterval;
-
-recBtn.addEventListener("click", async () => {
-  if (mediaRecorder && mediaRecorder.state === "recording") {
-    mediaRecorder.stop();
-    return;
+  function handleFile(file) {
+    selectedFile = file;
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent  = (file.size / 1024).toFixed(1) + ' KB';
+    fileInfo.style.display = 'flex';
+    analyzeBtn.disabled    = false;
+    document.getElementById('results').style.display = 'none';
+    drawWaveform(file);
   }
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-    chunks = [];
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = e => chunks.push(e.data);
-    mediaRecorder.onstop = () => {
-      clearInterval(recInterval);
-      recTimer.textContent = "";
-      recBtn.textContent = "🎙️ Record from mic";
-      recBtn.classList.remove("recording");
-      stream.getTracks().forEach(t=>t.stop());
-      const blob = new Blob(chunks, {type:"audio/webm"});
-      const file = new File([blob], "recording.webm", {type:"audio/webm"});
-      handleFile(file);
+
+  /* ── Waveform preview ── */
+  function drawWaveform(file) {
+    const wrap = document.getElementById('waveWrap');
+    const canvas = document.getElementById('waveCanvas');
+    wrap.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    const reader = new FileReader();
+    reader.onload = async e => {
+      try {
+        const actx = new AudioContext();
+        const buffer = await actx.decodeAudioData(e.target.result);
+        const data = buffer.getChannelData(0);
+        const W = canvas.offsetWidth * devicePixelRatio;
+        const H = canvas.offsetHeight * devicePixelRatio;
+        canvas.width = W; canvas.height = H;
+        ctx.fillStyle = '#0d1424'; ctx.fillRect(0,0,W,H);
+        const step = Math.ceil(data.length / W);
+        const grad = ctx.createLinearGradient(0,0,W,0);
+        grad.addColorStop(0,'#6366f1'); grad.addColorStop(1,'#a78bfa');
+        ctx.strokeStyle = grad; ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let i = 0; i < W; i++) {
+          let max = 0;
+          for (let j = 0; j < step; j++) max = Math.max(max, Math.abs(data[i*step+j]||0));
+          const y = (1 - max) * H/2;
+          i === 0 ? ctx.moveTo(i, y) : ctx.lineTo(i, y);
+        }
+        ctx.stroke();
+      } catch {}
     };
-    mediaRecorder.start();
-    recBtn.textContent = "⏹️ Stop recording";
-    recBtn.classList.add("recording");
-    let secs = 0;
-    recInterval = setInterval(() => { secs++; recTimer.textContent = secs + "s"; }, 1000);
-  } catch(e) {
-    alert("Microphone access denied: " + e.message);
+    reader.readAsArrayBuffer(file);
   }
-});
+
+  /* ── Colors per label ── */
+  const COLORS = {
+    vessel_like: '#ef4444', ambient: '#3b82f6',
+    unknown: '#f59e0b', anomaly: '#a855f7'
+  };
+
+  /* ── Analyze ── */
+  async function analyze() {
+    if (!selectedFile) return;
+    document.getElementById('loader').style.display  = 'block';
+    document.getElementById('results').style.display = 'none';
+    analyzeBtn.disabled = true;
+
+    const form = new FormData();
+    form.append('audio', selectedFile);
+
+    try {
+      const res  = await fetch('/predict', { method:'POST', body: form });
+      const data = await res.json();
+      if (data.error) { alert('Error: ' + data.error); return; }
+      renderResults(data);
+    } catch(e) {
+      alert('Server error: ' + e.message);
+    } finally {
+      document.getElementById('loader').style.display = 'none';
+      analyzeBtn.disabled = false;
+    }
+  }
+
+  function renderResults(data) {
+    const a = data.branch_a;
+    const b = data.branch_b;
+
+    /* Agreement banner */
+    const banner = document.getElementById('agreeBanner');
+    if (data.models_agree) {
+      banner.className = 'agree';
+      banner.textContent = `✅ Both models agree — ${a.label.replace('_',' ')}`;
+    } else {
+      banner.className = 'disagree';
+      banner.textContent = `⚠️ Models disagree — A: ${a.label.replace('_',' ')}  |  B: ${b.display_label.replace('_',' ')}  — Operator review recommended`;
+    }
+
+    /* ── Branch A ── */
+    document.getElementById('aIcon').textContent = a.icon;
+    const aLabelEl = document.getElementById('aLabel');
+    aLabelEl.textContent = a.label.replace('_',' ');
+    aLabelEl.style.color = COLORS[a.label] || '#6366f1';
+    document.getElementById('aDesc').textContent = a.description;
+    document.getElementById('aConf').textContent = a.confidence + '%';
+    document.getElementById('aConfFill').style.width  = a.confidence + '%';
+    document.getElementById('aConfFill').style.background = COLORS[a.label] || '#6366f1';
+
+    /* Per-class probability bars */
+    const allProbsEl = document.getElementById('aAllProbs');
+    allProbsEl.innerHTML = '';
+    Object.entries(a.all_probs).forEach(([cls, pct]) => {
+      const color = COLORS[cls] || '#6366f1';
+      allProbsEl.innerHTML += `
+        <div class="prob-row">
+          <span class="prob-name">${cls.replace('_',' ')}</span>
+          <div class="prob-bar-wrap"><div class="prob-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+          <span class="prob-val">${pct}%</span>
+        </div>`;
+    });
+
+    /* ── Branch B ── */
+    const bLabelEl = document.getElementById('bLabel');
+    const bIconEl = document.getElementById('bIcon');
+    const bDescEl = document.getElementById('bDesc');
+    const scoresEl = document.getElementById('bScores');
+
+    if (b.is_anomaly) {
+      bIconEl.textContent = '⚠️';
+      bLabelEl.textContent = 'Anomaly Detected';
+      bLabelEl.style.color = '#a855f7';
+      bDescEl.textContent = 'Acoustic signature falls outside known ocean sound distributions (Log-likelihood below threshold).';
+      document.getElementById('bAnomalyBadge').style.display = 'block';
+      
+      scoresEl.innerHTML = `
+        <div style="font-size:0.75rem;color:var(--muted);background:var(--surface2);padding:0.6rem;border-radius:0.5rem;margin-top:0.4rem;">
+          ⚠️ <strong>Out of Distribution</strong><br>
+          Signal log-likelihood (${b.best_score}) is below calibrated anomaly threshold (${b.anomaly_threshold}).
+        </div>
+      `;
+    } else {
+      bIconEl.textContent = b.icon;
+      bLabelEl.textContent = b.label.replace('_', ' ');
+      bLabelEl.style.color = COLORS[b.label] || '#a855f7';
+      bDescEl.textContent = b.description;
+      document.getElementById('bAnomalyBadge').style.display = 'none';
+
+      scoresEl.innerHTML = '';
+      Object.entries(b.norm_scores).forEach(([cls, val]) => {
+        const color = COLORS[cls] || '#a855f7';
+        scoresEl.innerHTML += `
+          <div class="gmm-row">
+            <span class="gmm-name">${cls.replace('_',' ')}</span>
+            <div class="gmm-bar-wrap"><div class="gmm-bar-fill" style="width:${val}%;background:${color}"></div></div>
+            <span class="gmm-val">${val}%</span>
+          </div>`;
+      });
+    }
+
+    document.getElementById('bRawScore').textContent  = b.best_score;
+    document.getElementById('bThreshold').textContent = b.anomaly_threshold;
+
+    /* Audio meta */
+    document.getElementById('metaDur').textContent = data.duration_s + 's';
+    document.getElementById('metaSr').textContent  = (data.sample_rate/1000).toFixed(1) + ' kHz';
+
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('results').scrollIntoView({ behavior:'smooth' });
+  }
 </script>
 </body>
 </html>
