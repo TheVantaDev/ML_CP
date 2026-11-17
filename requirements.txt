@@ -2,6 +2,11 @@
 #  Sonobuoy Sound Detective - Python Dependencies
 # -----------------------------------------------------------------
 
+# Web / Deployment
+flask>=3.0.0
+flask-cors>=4.0.0
+gunicorn>=21.2.0
+
 # Audio I/O and processing
 librosa>=0.10.0
 soundfile>=0.12.0
