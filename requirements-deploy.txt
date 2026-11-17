@@ -1,0 +1,14 @@
+# Core Flask & Web
+flask>=3.0.0
+flask-cors>=4.0.0
+gunicorn>=21.2.0
+
+# Audio Processing & DSP
+librosa>=0.10.0
+soundfile>=0.12.0
+scipy>=1.11.0
+numpy>=1.24.0
+
+# Classical Machine Learning & Pipeline
+scikit-learn>=1.4.0
+joblib>=1.3.0

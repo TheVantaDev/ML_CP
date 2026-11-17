@@ -241,6 +241,10 @@ def health():
 
 
 if __name__ == "__main__":
-    import webbrowser, threading
-    threading.Timer(1.5, lambda: webbrowser.open("http://localhost:5000/ui")).start()
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    # Open browser only when running locally (not in hosted production environments like Render)
+    if "PORT" not in os.environ:
+        import webbrowser, threading
+        threading.Timer(1.5, lambda: webbrowser.open(f"http://localhost:{port}/ui")).start()
+    app.run(host="0.0.0.0", port=port, debug=False)

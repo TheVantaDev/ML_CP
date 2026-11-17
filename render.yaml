@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: sonobuoy-sound-detective
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements-deploy.txt
+    startCommand: gunicorn --chdir frontend app:app --bind 0.0.0.0:$PORT --timeout 120
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
