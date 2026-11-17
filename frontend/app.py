@@ -68,28 +68,44 @@ print(f"  ✓ Features: {len(FEATURES)}", flush=True)
 print("=" * 55, flush=True)
 
 
-# ── Feature extraction ────────────────────────────────────────────────────────
+# ── Feature extraction & Preprocessing ─────────────────────────────────────────
+from src.preprocessing.audio_utils import preprocess
+from src.preprocessing.segmenter import segment_signal
 from src.features.extractor import extract_features
 
 SAMPLE_RATE = 22050
 SEGMENT_SEC = 4.0
 
 
-def extract_features_from_audio(y: np.ndarray, sr: int) -> np.ndarray:
-    if sr != SAMPLE_RATE:
-        y = librosa.resample(y, orig_sr=sr, target_sr=SAMPLE_RATE)
-        sr = SAMPLE_RATE
-    if y.ndim > 1:
-        y = librosa.to_mono(y.T)
-    target_len = int(SAMPLE_RATE * SEGMENT_SEC)
-    if len(y) < target_len:
-        y = np.pad(y, (0, target_len - len(y)))
+def process_and_extract_features(file_path: Path | str) -> tuple[np.ndarray, float, int]:
+    """
+    Runs the exact preprocessing pipeline from the project DSP stack:
+      1. Load audio & convert to mono
+      2. Resample to 22,050 Hz
+      3. Remove DC offset
+      4. Apply Butterworth bandpass filter
+      5. Apply spectral noise gating
+      6. RMS energy normalization (target_rms = 0.1)
+      7. Segment to 4.0s window
+      8. Extract 66 audio features
+    """
+    signal, sr = preprocess(file_path, sr=SAMPLE_RATE)
+    duration_s = round(len(signal) / sr, 2)
+    
+    segments = segment_signal(signal, sr=sr, duration=SEGMENT_SEC, overlap=0.0)
+    if segments:
+        window = segments[0][2]
     else:
-        y = y[:target_len]
-    feats = extract_features(y, sr=sr, clip_id="upload")
+        target_len = int(SAMPLE_RATE * SEGMENT_SEC)
+        if len(signal) < target_len:
+            window = np.pad(signal, (0, target_len - len(signal)))
+        else:
+            window = signal[:target_len]
+
+    feats = extract_features(window, sr=sr, clip_id="upload")
     vec = np.array([feats.get(col, 0.0) for col in FEATURES], dtype=float)
     vec = np.nan_to_num(vec, nan=0.0)
-    return vec
+    return vec, duration_s, sr
 
 
 # ── Label metadata ────────────────────────────────────────────────────────────
@@ -112,29 +128,15 @@ def predict_gmm(vec_scaled: np.ndarray):
         for label in GMM_CLASSES
     }
     
-    # Class sample counts for Bayesian priors:
-    # vessel_like: 2643, ambient: 154, unknown: 66
-    priors = {
-        "vessel_like": 0.50,
-        "ambient": 0.35,
-        "unknown": 0.15
-    }
-
-    # Log posterior = log P(X | Class) + log P(Class)
-    log_posteriors = {
-        lbl: raw_scores[lbl] + np.log(priors.get(lbl, 0.33))
-        for lbl in GMM_CLASSES
-    }
-
-    best_label = max(log_posteriors, key=log_posteriors.get)
+    best_label = max(raw_scores, key=raw_scores.get)
     best_raw_score = raw_scores[best_label]
     
     # Anomaly check: log-likelihood is below anomaly threshold
     is_anomaly = bool(best_raw_score < ANOMALY_THRESHOLD)
 
-    # Softmax to get clean 0-100% probabilities
-    max_log = max(log_posteriors.values())
-    exp_scores = {k: np.exp(v - max_log) for k, v in log_posteriors.items()}
+    # Softmax on log-likelihoods to get relative confidence %
+    max_log = max(raw_scores.values())
+    exp_scores = {k: np.exp(v - max_log) for k, v in raw_scores.items()}
     total_exp = sum(exp_scores.values())
     norm_scores = {
         k: round(float((v / total_exp) * 100), 1)
@@ -169,15 +171,11 @@ def predict():
         tmp_path = tmp.name
 
     try:
-        # ALWAYS load and resample to standard 22050 Hz (exact training sample rate)
-        y, sr = librosa.load(tmp_path, sr=SAMPLE_RATE, mono=True)
+        vec, duration_s, sr = process_and_extract_features(tmp_path)
     except Exception as e:
-        return jsonify({"error": f"Could not read audio: {e}"}), 422
+        return jsonify({"error": f"Could not process audio: {e}"}), 422
     finally:
         Path(tmp_path).unlink(missing_ok=True)
-
-    # Shared feature vector
-    vec = extract_features_from_audio(y, sr)
 
     # ── Branch A: Random Forest ───────────────────────────────────
     vec_rf = rf_scaler.transform(vec.reshape(1, -1))
@@ -228,7 +226,7 @@ def predict():
         },
         # ── Agreement ────────────────────────────────────────────
         "models_agree"  : models_agree,
-        "duration_s"    : round(len(y) / sr, 2),
+        "duration_s"    : duration_s,
         "sample_rate"   : sr,
     })
 
